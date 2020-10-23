@@ -16,4 +16,7 @@ io.on("connection", (socket) => {
   });
 });
 
+setInterval(function () {
+  io.sockets.emit("message", "checkValue");
+}, 20000);
 server.listen(8080, () => console.log(`Server Running`));

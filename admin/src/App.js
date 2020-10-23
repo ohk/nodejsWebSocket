@@ -16,6 +16,16 @@ function App() {
   const [series, setSeries] = useState([]);
   const size = useWindowSize();
   const [updated, setUpdated] = useState(100);
+  const colors = [
+    "#011627",
+    "#2ec4b6",
+    "#e71d36",
+    "#ff9f1c",
+    "#4f000b",
+    "#00509d",
+    "#6a4c93",
+    "#344e41",
+  ];
   useEffect(() => {
     const socket = socketIOClient("http://localhost:8080");
     socket.on("admin", (data) => {
@@ -31,19 +41,15 @@ function App() {
             })
           : console.log("Hello World");
       }
-
+      setReady(true);
       setUpdated(Math.random());
-      setSeries([...series]);
       console.log(series);
       console.log(data);
     });
   }, []);
 
-  useEffect(() => {
-    console.log("Data change");
-  }, [series]);
-  return updated !== 100 ? (
-    <LineChart width={size.width} height={size.height}>
+  return ready ? (
+    <LineChart width={size.width} height={size.height - updated}>
       <CartesianGrid strokeDasharray="3 3" />
       <XAxis
         dataKey="category"
@@ -53,13 +59,18 @@ function App() {
       <YAxis dataKey="value" />
       <Tooltip />
       <Legend />
-      {updated !== 0
-        ? series.map((s) => (
-            <Line dataKey="value" data={s.data} name={s.name} key={s.name} />
-          ))
-        : series.map((s) => (
-            <Line dataKey="value" data={s.data} name={s.name} key={s.name} />
-          ))}
+
+      {series.map((s, index) => (
+        <Line
+          dataKey="value"
+          type="monotone"
+          stroke={colors[index]}
+          strokeWidth={2}
+          data={s.data}
+          name={s.name}
+          key={s.name}
+        />
+      ))}
     </LineChart>
   ) : (
     <div>Data Waiting</div>
